@@ -1,0 +1,8 @@
+name: Quests
+version: 1.0
+api-version: 1.17
+main: com.quests.main.Quests
+author: F12-Exploit#5935
+commands:
+  quest:
+    description: The base quests command.
