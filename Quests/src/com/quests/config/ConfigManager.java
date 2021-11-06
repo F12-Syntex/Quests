@@ -8,6 +8,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
+import com.base.database.Databases;
+import com.base.database.MySQLLoader;
+import com.base.database.PlayerData;
+
 public class ConfigManager {
 
     public ArrayList<Config> config = new ArrayList<Config>();
@@ -17,7 +21,10 @@ public class ConfigManager {
     public Cooldown cooldown;
     public Configs configs;
     public Quests quests;
+    
     public PlayerData playerData;
+    
+    public MySQLLoader sqlLoader;
     
     public void setup(Plugin plugin) {
     
@@ -28,7 +35,6 @@ public class ConfigManager {
     	this.cooldown = new Cooldown("cooldown", 1.4);
     	this.configs = new Configs("configs", 1.4);
     	this.quests = new Quests("quests", 1.0);
-    	this.playerData = new PlayerData("players", 1.0);
     	
     	this.config.clear();
 
@@ -37,9 +43,17 @@ public class ConfigManager {
     	this.config.add(cooldown);
     	this.config.add(configs);
     	this.config.add(quests);
-    	this.config.add(playerData);
+    	
+    	//register mysql databases
+    	this.sqlLoader = new MySQLLoader();
+    	sqlLoader.loadDatabases();
+    	this.config.addAll(sqlLoader.getConfiguration());
+    	
+    	this.playerData = (PlayerData) this.sqlLoader.getDatabase(Databases.PLAYER_DATA);
     	
     	this.configure(plugin, config);
+    	
+    	this.sqlLoader.connect();
     }
 
     public void configure(Plugin plugin, List<Config> configs) {
@@ -85,5 +99,17 @@ public class ConfigManager {
     public Config getConfig(Configuration configuration) {
     	return config.stream().filter(i -> i.configuration() == configuration).findFirst().get();
     }
+    
+	public DatabaseConfig getDatabaseConfig(Databases database) {
+    	for(Config config : this.config) { 
+    		if(config instanceof DatabaseConfig) {
+    			DatabaseConfig guiConfig = (DatabaseConfig)config;
+    			if(guiConfig.getName().equals(database.name().toLowerCase())) {
+    				return guiConfig;
+    			}
+    		}
+    	}
+		return null;
+	}
 
 }

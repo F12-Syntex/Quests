@@ -1,6 +1,7 @@
 
 package com.quests.commands;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
@@ -13,6 +14,15 @@ public class Help extends SubCommand {
 
     @Override
     public void onCommand(Player player, String[] args) {
+    	
+    	Quests.getInstance().configManager.sqlLoader.getDatabases().forEach(i -> {
+			try {
+				i.update();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
     	
     	if(args.length <= 1) {
     		MessageUtils.sendHelp(player);

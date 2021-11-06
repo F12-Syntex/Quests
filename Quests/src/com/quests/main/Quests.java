@@ -1,5 +1,6 @@
 package com.quests.main;
 import java.io.File;
+import java.sql.SQLException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -32,12 +33,12 @@ public class Quests extends JavaPlugin implements Listener{
 		
 		ParentFolder = getDataFolder();
 	    instance = this;
-		
+
 	    this.reload();
-	    
+
 	    eventHandler = new EventHandler();
 	    eventHandler.setup();
-	    
+	   
 	    this.cooldownManager = new CooldownManager();
 
 	    this.cooldownTick = new CooldownTick();
@@ -51,7 +52,15 @@ public class Quests extends JavaPlugin implements Listener{
 	
 	@Override
 	public void onDisable(){
-		Quests.getInstance().configManager.playerData.update();
+		
+		this.configManager.sqlLoader.getDatabases().forEach(i -> {
+			try {
+				i.update();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		});
+		
 		this.eventHandler = null;
 		HandlerList.getRegisteredListeners(instance);
 	}

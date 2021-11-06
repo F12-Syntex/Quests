@@ -11,7 +11,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import com.quests.config.PlayerData;
+import com.base.database.PlayerData;
 import com.quests.create.CreationData;
 import com.quests.main.Quests;
 import com.quests.racetrack.RaceTrack;
