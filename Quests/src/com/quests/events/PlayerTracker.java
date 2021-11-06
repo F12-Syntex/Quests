@@ -42,39 +42,23 @@ public class PlayerTracker extends SubEvent{
 	
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent e) {
-		for(CreationData filteredQuests : Quests.getInstance().configManager.quests.getQuests()) {
-			if(filteredQuests.getTYPE() == QuestType.BLOCK_BREAK) {
-				playerRecord.getPlayer(e.getPlayer()).IncQuestProgress(filteredQuests.getNAME(), 1);		
-			}
-		}
+		this.incQuest(QuestType.BLOCK_BREAK, e.getPlayer());
 	}
 	
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent e) {
-		for(CreationData filteredQuests : Quests.getInstance().configManager.quests.getQuests()) {
-			if(filteredQuests.getTYPE() == QuestType.BLOCK_PLACE) {
-				playerRecord.getPlayer(e.getPlayer()).IncQuestProgress(filteredQuests.getNAME(), 1);		
-			}
-		}
+		this.incQuest(QuestType.BLOCK_PLACE, e.getPlayer());
 	}
 	
 	@EventHandler
 	public void onCommandRun(PlayerCommandPreprocessEvent e) {
-		for(CreationData filteredQuests : Quests.getInstance().configManager.quests.getQuests()) {
-			if(filteredQuests.getTYPE() == QuestType.COMMAND_RUN) {
-				playerRecord.getPlayer(e.getPlayer()).IncQuestProgress(filteredQuests.getNAME(), 1);		
-			}
-		}
+		this.incQuest(QuestType.COMMAND_RUN, e.getPlayer());
 	}
 	
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e) {
 		raceTrack.updateUser(e.getPlayer());
-		for(CreationData filteredQuests : Quests.getInstance().configManager.quests.getQuests()) {
-			if(filteredQuests.getTYPE() == QuestType.RUN_DISTANCE) {
-				playerRecord.getPlayer(e.getPlayer()).IncQuestProgress(filteredQuests.getNAME(), raceTrack.getRunningDistance(e.getPlayer()));		
-			}
-		}
+		this.incQuest(QuestType.RUN_DISTANCE, e.getPlayer());
 	}
 	
 	@EventHandler
@@ -83,11 +67,7 @@ public class PlayerTracker extends SubEvent{
 			if(e.getEntity() instanceof Zombie) {
 				if(e.getEntity().isDead()) {
 					System.out.println("User has killed mob");
-					for(CreationData filteredQuests : Quests.getInstance().configManager.quests.getQuests()) {
-						if(filteredQuests.getTYPE() == QuestType.KILL_MOB) {
-							playerRecord.getPlayer((Player)e.getDamager()).IncQuestProgress(filteredQuests.getNAME(), 1);		
-						}
-					}
+					this.incQuest(QuestType.KILL_MOB, (Player)e.getDamager());
 				}
 			}
 		}
@@ -98,12 +78,16 @@ public class PlayerTracker extends SubEvent{
 		if(e.getEntity().getKiller() instanceof Player) {
 			if(e.getEntity() instanceof Mob) {
 				if(e.getEntity().isDead()) {
-					for(CreationData filteredQuests : Quests.getInstance().configManager.quests.getQuests()) {
-						if(filteredQuests.getTYPE() == QuestType.KILL_MOB) {
-							playerRecord.getPlayer((Player)e.getEntity().getKiller()).IncQuestProgress(filteredQuests.getNAME(), 1);		
-						}
-					}
+					this.incQuest(QuestType.KILL_MOB, (Player)e.getEntity().getKiller());
 				}
+			}
+		}
+    }
+    
+    public void incQuest(QuestType quest, Player player) {
+		for(CreationData filteredQuests : Quests.getInstance().configManager.quests.getQuests()) {
+			if(filteredQuests.getTYPE() == quest) {
+				playerRecord.getPlayer(player).IncQuestProgress(filteredQuests.getNAME(), 1);		
 			}
 		}
     }
